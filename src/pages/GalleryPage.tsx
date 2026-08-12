@@ -8,13 +8,16 @@ import { Trash2, Upload } from 'lucide-react';
 
 export default function GalleryPage() {
   const qc = useQueryClient();
-  const { data: items = [], isLoading } = useQuery({
-    queryKey: ['gallery-items'],
-    queryFn: api.getGalleryItems,
-  });
+  const [filterCategory, setFilterCategory] = useState('all');
+
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: api.getCategories,
+  });
+
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ['gallery-items', filterCategory],
+    queryFn: () => api.getGalleryItems(filterCategory),
   });
 
   const [categoryId, setCategoryId] = useState('');
@@ -62,6 +65,27 @@ export default function GalleryPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Gallery</h1>
+
+      <div className="flex flex-wrap gap-2 mb-6">
+        <Button
+          variant={filterCategory === 'all' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFilterCategory('all')}
+        >
+          All categories
+        </Button>
+        {categories.map((c) => (
+          <Button
+            key={c.id}
+            variant={filterCategory === c.slug ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilterCategory(c.slug)}
+          >
+            {c.nameEn}
+          </Button>
+        ))}
+      </div>
+
       <Card className="mb-6">
         <CardTitle>Upload Image</CardTitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
@@ -73,39 +97,64 @@ export default function GalleryPage() {
               onChange={(e) => setCategoryId(e.target.value)}
             >
               <option value="">Select category</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>{c.nameEn}</option>
+              {categories.filter((c) => c.isActive).map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nameEn}
+                </option>
               ))}
             </select>
           </div>
-          <div><Label>Title (EN)</Label><Input value={titleEn} onChange={(e) => setTitleEn(e.target.value)} /></div>
-          <div><Label>Title (BN)</Label><Input value={titleBn} onChange={(e) => setTitleBn(e.target.value)} /></div>
+          <div>
+            <Label>Title (EN)</Label>
+            <Input value={titleEn} onChange={(e) => setTitleEn(e.target.value)} />
+          </div>
+          <div>
+            <Label>Title (BN)</Label>
+            <Input value={titleBn} onChange={(e) => setTitleBn(e.target.value)} />
+          </div>
         </div>
         <label className="mt-4 inline-block">
-          <input type="file" accept="image/*" className="hidden" onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) handleUpload(f);
-          }} />
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) handleUpload(f);
+            }}
+          />
           <Button variant="outline" disabled={uploading} asChild>
-            <span><Upload className="h-4 w-4" />{uploading ? 'Uploading...' : 'Upload to Cloudinary'}</span>
+            <span>
+              <Upload className="h-4 w-4" />
+              {uploading ? 'Uploading...' : 'Upload to Cloudinary'}
+            </span>
           </Button>
         </label>
       </Card>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {items.map(({ item, category }) => (
-          <Card key={item.id} className="p-0 overflow-hidden">
-            <img src={item.url} alt={item.titleEn} className="w-full h-40 object-cover" />
-            <div className="p-4">
-              <p className="font-medium">{item.titleEn}</p>
-              <p className="text-sm text-muted">{category.nameEn}</p>
-              <Button variant="destructive" size="sm" className="mt-2" onClick={() => deleteMutation.mutate(item.id)}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          </Card>
-        ))}
-      </div>
+      {items.length === 0 ? (
+        <p className="text-muted">No items in this category.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {items.map(({ item, category }) => (
+            <Card key={item.id} className="p-0 overflow-hidden">
+              <img src={item.url} alt={item.titleEn} className="w-full h-40 object-cover" />
+              <div className="p-4">
+                <p className="font-medium">{item.titleEn}</p>
+                <p className="text-sm text-muted">{category.nameEn}</p>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => deleteMutation.mutate(item.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

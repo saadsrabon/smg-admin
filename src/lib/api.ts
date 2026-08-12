@@ -71,7 +71,10 @@ export const api = {
     }),
   deleteCategory: (id: string) =>
     request(`/api/v1/admin/gallery/categories/${id}`, { method: 'DELETE' }),
-  getGalleryItems: () => request<GalleryItemRow[]>('/api/v1/admin/gallery/items'),
+  getGalleryItems: (category?: string) => {
+    const q = category && category !== 'all' ? `?category=${encodeURIComponent(category)}` : '';
+    return request<GalleryItemRow[]>(`/api/v1/admin/gallery/items${q}`);
+  },
   createGalleryItem: (data: object) =>
     request('/api/v1/admin/gallery/items', { method: 'POST', body: JSON.stringify(data) }),
   updateGalleryItem: (id: string, data: object) =>
