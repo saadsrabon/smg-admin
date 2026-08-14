@@ -77,6 +77,7 @@ export const SECTION_IMAGE_SLOTS: Record<string, { key: string; label: string }[
     { key: 'slide-0', label: 'Slide 1' },
     { key: 'slide-1', label: 'Slide 2' },
     { key: 'slide-2', label: 'Slide 3' },
+    { key: 'slide-3', label: 'Slide 4' },
   ],
   about: [{ key: 'video-preview', label: 'Video Preview' }],
   programs: [
