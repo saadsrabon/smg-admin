@@ -7,6 +7,7 @@ import { TabsRoot, TabsList, TabsTrigger, TabsContent } from '@/components/ui/ta
 import { SectionImageManager, SECTION_IMAGE_SLOTS } from '@/components/cms/SectionImageManager';
 import { ImpactSectionEditor } from '@/components/cms/ImpactSectionEditor';
 import { PhotosSectionEditor } from '@/components/cms/PhotosSectionEditor';
+import { PhotosImageManager } from '@/components/cms/PhotosImageManager';
 
 const SECTIONS = [
   { key: 'hero', label: 'Hero' },
@@ -113,7 +114,7 @@ function SectionEditor({ sectionKey }: { sectionKey: string }) {
           <TabsTrigger value="en">Content (EN)</TabsTrigger>
           <TabsTrigger value="bn">Content (BN)</TabsTrigger>
           {imageSlots && (
-            <TabsTrigger value="images">{sectionKey === 'photos' ? 'Photo uploads' : 'Images'}</TabsTrigger>
+            <TabsTrigger value="images">{sectionKey === 'photos' ? 'Photos' : 'Images'}</TabsTrigger>
           )}
         </TabsList>
         <TabsContent value="en">
@@ -136,16 +137,27 @@ function SectionEditor({ sectionKey }: { sectionKey: string }) {
         </TabsContent>
         {imageSlots && (
           <TabsContent value="images">
-            <p className="text-sm text-muted mb-4">Images are shared across locales (stored in EN content).</p>
-            <SectionImageManager
-              images={imagesEn}
-              slots={imageSlots}
-              folder={`smg-sections/${sectionKey}`}
-              onChange={(imgs) => {
-                setContentEn({ ...contentEn, images: imgs });
-                setContentBn({ ...contentBn, images: imgs });
-              }}
-            />
+            {sectionKey === 'photos' ? (
+              <PhotosImageManager
+                contentEn={contentEn}
+                contentBn={contentBn}
+                onChangeEn={setContentEn}
+                onChangeBn={setContentBn}
+              />
+            ) : (
+              <>
+                <p className="text-sm text-muted mb-4">Images are shared across locales (stored in EN content).</p>
+                <SectionImageManager
+                  images={imagesEn}
+                  slots={imageSlots}
+                  folder={`smg-sections/${sectionKey}`}
+                  onChange={(imgs) => {
+                    setContentEn({ ...contentEn, images: imgs });
+                    setContentBn({ ...contentBn, images: imgs });
+                  }}
+                />
+              </>
+            )}
           </TabsContent>
         )}
       </TabsRoot>
