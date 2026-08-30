@@ -6,6 +6,7 @@ import { Input, Textarea, Label, Card, CardTitle } from '@/components/ui/input';
 import { TabsRoot, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { SectionImageManager, SECTION_IMAGE_SLOTS } from '@/components/cms/SectionImageManager';
 import { ImpactSectionEditor } from '@/components/cms/ImpactSectionEditor';
+import { PhotosSectionEditor } from '@/components/cms/PhotosSectionEditor';
 
 const SECTIONS = [
   { key: 'hero', label: 'Hero' },
@@ -116,6 +117,8 @@ function SectionEditor({ sectionKey }: { sectionKey: string }) {
         <TabsContent value="en">
           {sectionKey === 'impact' ? (
             <ImpactSectionEditor content={contentEn} onChange={setContentEn} />
+          ) : sectionKey === 'photos' ? (
+            <PhotosSectionEditor content={contentEn} onChange={setContentEn} />
           ) : (
             <JsonFieldEditor content={contentEn} onChange={setContentEn} />
           )}
@@ -123,6 +126,8 @@ function SectionEditor({ sectionKey }: { sectionKey: string }) {
         <TabsContent value="bn">
           {sectionKey === 'impact' ? (
             <ImpactSectionEditor content={contentBn} onChange={setContentBn} />
+          ) : sectionKey === 'photos' ? (
+            <PhotosSectionEditor content={contentBn} onChange={setContentBn} />
           ) : (
             <JsonFieldEditor content={contentBn} onChange={setContentBn} />
           )}
