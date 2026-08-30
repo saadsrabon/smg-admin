@@ -112,7 +112,9 @@ function SectionEditor({ sectionKey }: { sectionKey: string }) {
         <TabsList>
           <TabsTrigger value="en">Content (EN)</TabsTrigger>
           <TabsTrigger value="bn">Content (BN)</TabsTrigger>
-          {imageSlots && <TabsTrigger value="images">Images</TabsTrigger>}
+          {imageSlots && (
+            <TabsTrigger value="images">{sectionKey === 'photos' ? 'Photo uploads' : 'Images'}</TabsTrigger>
+          )}
         </TabsList>
         <TabsContent value="en">
           {sectionKey === 'impact' ? (
